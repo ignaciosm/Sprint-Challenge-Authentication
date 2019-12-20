@@ -9,10 +9,12 @@ router.post('/register', (req, res) => {
   user.password = hash;
 
   authModel.create(user)
-  .then(user => {
-    res.json(users)
+  .then(([id]) => {
+    res.status(201).json(id);
   })
-  .catch(err => res.send(err));
+  .catch(error => {
+    res.status(500).json(error);
+  });
 });
 
 router.post('/login', (req, res) => {
