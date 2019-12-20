@@ -69,5 +69,42 @@ describe("server.js", function() {
 
     });
   });
+
+  describe("Jokes", function() {
+    beforeEach(async () => {
+      await db("users").truncate();
+    });
+
+    it("create new user and login", function() {
+      const newUser = { username: "ignacio", password: "test123" }
+      return request(server)
+        .post("/api/auth/register")
+        .send(newUser)
+        .then(res => {
+          
+          expect(res.status).toBe(201);
+
+          return request(server)
+            .post("/api/auth/login")
+            .send(newUser)
+            .then(res => {
+              const token = res.body.token;
+              expect(token).not.toBeNull()
+
+              return request(server)
+              .get("/api/jokes")
+              .set("token", token)
+              .then(res => {
+                expect(res.status).toBe(200);
+                expect(Array.isArray(res.body)).toBe(true);
+              });
+
+            });
+
+         });
+
+    });
+  });
+
 });
 
